@@ -1,0 +1,31 @@
+name: Update packages
+
+on:
+  workflow_dispatch:
+  schedule:
+  # Every day at 4am
+  - cron: "0 4 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      
+      - name: "Checkout AutoEQ"    
+        uses: actions/checkout@v2
+        with:
+          repository: jaakkopasanen/AutoEq
+          path: autoeq/
+          
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          
+      - name: Run packaging script
+        run: |
+          cd autoeq
+          python ../package.py
