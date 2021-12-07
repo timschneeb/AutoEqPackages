@@ -8,6 +8,7 @@ import subprocess
 import tarfile
 import time
 import urllib.parse
+from datetime import datetime
 
 
 def main():
@@ -79,8 +80,8 @@ def main():
     # Create version.json
     entry = {
         "commit": subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip(),
-        "commit_time": subprocess.check_output('git log -1 --format="%at" | xargs -I{} date -d @{} "+%Y/%m/%d %H:%M:%S"').decode('ascii').strip(),
-        "package_time": time.strftime('+%Y/%m/%d %H:%M:%S')
+        "commit_time": datetime.utcfromtimestamp(int(subprocess.check_output(['git', 'log', '-1', '--format=%at'], text=True).strip())).strftime('%Y/%m/%d %H:%M:%S'),
+        "package_time": time.strftime('%Y/%m/%d %H:%M:%S')
     }
     with open('export/version.json', 'w') as outfile:
         json.dump(entry, outfile)
