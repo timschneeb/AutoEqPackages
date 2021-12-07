@@ -29,3 +29,16 @@ jobs:
         run: |
           cd autoeq
           python ../package.py
+          
+      - name: Collect exported data
+        run: |
+          mv autoeq/archive.tar.gz .
+          mv autoeq/export/index.json .
+          mv autoeq/export/version.json .
+          rm -rf autoeq
+          
+      - name: Publish changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update archive
+          file_pattern: ./*.tar.gz ./*.json
