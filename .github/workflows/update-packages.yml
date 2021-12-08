@@ -35,7 +35,14 @@ jobs:
           cd autoeq
           python ../package.py
           
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "autoeq/archive.tar.gz, autoeq/export/index.json, autoeq/export/version.json"
+        
       - name: Collect exported data
+        if: steps.check_files.outputs.files_exists == 'true'
         run: |
           mv autoeq/archive.tar.gz .
           mv autoeq/export/index.json .
@@ -44,6 +51,7 @@ jobs:
           
       - name: Publish changes
         uses: stefanzweifel/git-auto-commit-action@v4
+        if: steps.check_files.outputs.files_exists == 'true'
         with:
           commit_message: Update archive
           file_pattern: ./*.tar.gz ./*.json
