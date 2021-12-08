@@ -32,6 +32,8 @@ jobs:
           
       - name: Run packaging script
         run: |
+          sudo apt install tree
+          tree
           cd autoeq
           python ../package.py
           
