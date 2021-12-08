@@ -16,6 +16,13 @@ def main():
         print("Wrong working directory")
         exit(1)
 
+    # Check for upstream update
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+    with open("../version.json") as file:
+        if json.load(file)["commit"] == commit:
+            print("No new commits were pushed to the upstream repo. Archive is already up-to-date")
+            exit(0)
+        
     # Parse INDEX.md
     indices = []
     with open("results/INDEX.md") as file:
