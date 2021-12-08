@@ -91,7 +91,7 @@ def main():
         "commit_time": datetime.utcfromtimestamp(int(subprocess.check_output(['git', 'log', '-1', '--format=%at'], text=True).strip())).strftime('%Y/%m/%d %H:%M:%S'),
         "package_time": time.strftime('%Y/%m/%d %H:%M:%S'),
         "package_url": "https://github.com/ThePBone/AutoEqPackages/blob/main/archive.tar.gz",
-        "flavor": "GraphicEQ+CSV"
+        "type": ["GraphicEQ", "CSV"]
     }]
     with open('export/version.json', 'w') as outfile:
         json.dump(entry, outfile)
