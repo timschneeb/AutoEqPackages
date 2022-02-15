@@ -20,7 +20,7 @@ def main():
     if os.path.isfile("../version.json"):
         commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
         with open("../version.json") as file:
-            if json.load(file)["commit"] == commit:
+            if json.load(file)[0]["commit"] == commit:
                 print("No new commits were pushed to the upstream repo. Archive is already up-to-date")
                 exit(0)
         
