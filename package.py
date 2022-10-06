@@ -64,6 +64,7 @@ def main():
 
     # Collect additional data and rank
     table = []
+    uid = 0
     for name in group.keys():
         ranks = [x for x in rank_order for y in group[name] if y.startswith(x)]
 
@@ -77,8 +78,10 @@ def main():
             entry = {
                 "n": name,
                 "s": source,
-                "r": rank
+                "r": rank,
+                "i": uid
             }
+            uid += 1
             table.append(entry)
 
     # Create index.json
