@@ -28,7 +28,7 @@ def main():
     indices = []
     with open("results/INDEX.md") as file:
         for line in file:
-            result = re.search(r'\[([^\[\]]+)]\(([^()]+)\)\s+by\s+(.+)', line, re.IGNORECASE)
+            result = re.search(r'\[([^\]]+)\]\((.*)\).*\s+by\s+(.+)', line, re.IGNORECASE)
             if result:
                 # Name, relative path, source
                 indices.append([result.group(1), urllib.parse.unquote(result.group(2)), result.group(3)])
