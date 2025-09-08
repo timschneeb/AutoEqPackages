@@ -25,7 +25,7 @@ jobs:
 
       - name: Get latest release info
         run:
-          curl -fLO https://github.com/rivnakm/AutoEqPackages/releases/latest/download/version.json || true
+          curl -fLO https://github.com/timschneeb/AutoEqPackages/releases/latest/download/version.json || true
 
       - name: Run packaging script
         run: |
