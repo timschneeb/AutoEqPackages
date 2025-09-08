@@ -9,49 +9,55 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: write
     steps:
-      - name: "Prepare environment"
-        run: |
-          sudo apt update
-          sudo apt install git
-    
-      - name: "Checkout"
-        uses: actions/checkout@v2
-      
-      - name: "Checkout AutoEQ"    
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Checkout AutoEQ
+        uses: actions/checkout@v5
         with:
           repository: jaakkopasanen/AutoEq
           path: autoeq/
-          
-      - name: Set up python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-          
+
+      - name: Get latest release info
+        run:
+          curl -fLO https://github.com/rivnakm/AutoEqPackages/releases/latest/download/version.json || true
+
       - name: Run packaging script
         run: |
           cd autoeq
           python ../package.py
-          
+
       - name: Check file existence
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "autoeq/archive.tar.gz, autoeq/export/index.json, autoeq/export/version.json"
-        
+        run: |
+          test -e autoeq/archive.tar.gz
+          test -e autoeq/export/index.json
+          test -e autoeq/export/version.json
+
       - name: Collect exported data
-        if: steps.check_files.outputs.files_exists == 'true'
         run: |
           mv autoeq/archive.tar.gz .
           mv autoeq/export/index.json .
           mv autoeq/export/version.json .
           rm -rf autoeq
-          
-      - name: Publish changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        if: steps.check_files.outputs.files_exists == 'true'
+
+      - name: Create tag
+        id: create-tag
+        run: |
+          TAG="autoeq-$(date -uI)"
+          echo "tag-name=${TAG}" >> "${GITHUB_OUTPUT}"
+          git tag "${TAG}"
+          git push --tags
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
         with:
-          commit_message: Update archive
-          file_pattern: ./*.tar.gz ./*.json
+          tag_name: ${{ steps.create-tag.outputs.tag-name }}
+          files: |
+            archive.tar.gz
+            index.json
+            varsion.json
