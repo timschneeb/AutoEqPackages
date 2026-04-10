@@ -45,6 +45,12 @@ jobs:
           mv autoeq/export/version.json .
           rm -rf autoeq
 
+      - name: Update json manifests
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update *.json manifests
+          file_pattern: ./*.json
+
       - name: Create tag
         id: create-tag
         run: |
