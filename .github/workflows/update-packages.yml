@@ -33,12 +33,16 @@ jobs:
           python ../package.py
 
       - name: Check file existence
+        id: check_files
         run: |
-          test -e autoeq/archive.tar.gz
-          test -e autoeq/export/index.json
-          test -e autoeq/export/version.json
+          if test -e autoeq/archive.tar.gz && test -e autoeq/export/index.json && test -e autoeq/export/version.json; then
+            echo "files_found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "files_found=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Collect exported data
+        if: steps.check_files.outputs.files_found == 'true'
         run: |
           mv autoeq/archive.tar.gz .
           mv autoeq/export/index.json .
@@ -46,12 +50,14 @@ jobs:
           rm -rf autoeq
 
       - name: Update json manifests
+        if: steps.check_files.outputs.files_found == 'true'
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update *.json manifests
           file_pattern: ./*.json
 
       - name: Create tag
+        if: steps.check_files.outputs.files_found == 'true'
         id: create-tag
         run: |
           TAG="autoeq-$(date -uI)"
@@ -60,6 +66,7 @@ jobs:
           git push --tags
 
       - name: Publish release
+        if: steps.check_files.outputs.files_found == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.create-tag.outputs.tag-name }}
